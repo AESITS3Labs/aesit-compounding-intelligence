@@ -1,0 +1,1386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AESIT® — Compounding Intelligence™ Simulator | S³ Labs®</title>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --carbon:       #000000;
+  --titanium:     #888888;
+  --brushed:      #A8A8A8;
+  --chrome:       #C8C8C8;
+  --grid-white:   #E8E8E8;
+  --race-red:     #CC0000;
+  --race-red-2:   #FF2020;
+  --gold:         #D4AF37;
+
+  --col-design:   #C48F1D;
+  --col-ops:      #1C98A6;
+  --col-protect:  #4070B8;
+
+  --grad-chrome:     linear-gradient(135deg, #6A6A6A 0%, #D8D8D8 40%, #F0F0F0 55%, #A0A0A0 100%);
+  --grad-chrome-bar: linear-gradient(135deg, #6A6A6A 0%, #888888 15%, #D8D8D8 32%, #F0F0F0 44%, #CACACA 56%, #909090 70%, #707070 83%, #A0A0A0 100%);
+  --grad-steel:      linear-gradient(180deg, #232323 0%, #191919 50%, #202020 100%);
+  --grad-red:        linear-gradient(135deg, #CC0000 0%, #FF2020 40%, #AA0000 100%);
+  --grad-red-h:      linear-gradient(90deg, #CC0000 0%, #FF2020 50%, #991000 100%);
+  --grad-gold:       linear-gradient(135deg, #B8922A 0%, #D4AF37 40%, #F0CC55 60%, #B8922A 100%);
+  --grad-design:     linear-gradient(135deg, #8A6010 0%, #C48F1D 40%, #E0B040 60%, #A07015 100%);
+  --grad-ops:        linear-gradient(135deg, #0E6070 0%, #1C98A6 40%, #30C0D0 60%, #0E7080 100%);
+  --grad-protect:    linear-gradient(135deg, #244080 0%, #4070B8 40%, #6090D8 60%, #2A4890 100%);
+
+  --border:         rgba(200,200,200,0.10);
+  --border-mid:     rgba(200,200,200,0.20);
+  --border-bright:  rgba(200,200,200,0.35);
+  --text-secondary: #B0A898;
+  --text-muted:     #888888;
+
+  --title-font: 'League Spartan', sans-serif;
+  --body-font:  'Barlow', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  min-height: 100vh;
+  background: var(--carbon);
+  color: var(--text-secondary);
+  font-family: var(--body-font);
+  line-height: 1.7;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 52px 6%;
+}
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+.page-header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-mid);
+  position: relative;
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 100px; height: 2px;
+  background: var(--grad-red-h);
+  border-radius: 1px;
+}
+
+.header-eyebrow {
+  font-family: var(--title-font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: var(--grad-chrome);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-eyebrow::after {
+  content: '';
+  display: inline-block;
+  width: 32px; height: 1px;
+  background: linear-gradient(90deg, rgba(200,200,200,0.4), transparent);
+}
+
+.header-title {
+  font-family: var(--title-font);
+  font-size: clamp(26px, 4vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.0;
+  margin-bottom: 6px;
+}
+
+.title-main {
+  background: var(--grad-chrome);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title-accent {
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-subtitle {
+  font-family: var(--title-font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  background: var(--grad-chrome);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0.65;
+  margin-bottom: 14px;
+}
+
+.header-lead {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  max-width: 820px;
+}
+
+.header-lead strong {
+  color: var(--chrome);
+  font-weight: 500;
+  -webkit-text-fill-color: var(--chrome);
+}
+
+/* ══════════════════════════════════════
+   CONTROLS PANEL
+══════════════════════════════════════ */
+.controls-panel {
+  margin-bottom: 28px;
+  border: 1px solid var(--border-mid);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--grad-steel);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.55);
+}
+
+.controls-header {
+  background: var(--grad-chrome-bar);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.controls-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 80px; height: 2px;
+  background: var(--grad-red-h);
+}
+
+.controls-header-title {
+  font-family: var(--title-font);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #0A0A0A;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+}
+
+.controls-header-tag {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--grad-gold);
+  color: #0A0A0A;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
+.controls-body {
+  padding: 24px 22px;
+}
+
+/* Metric cards row */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 600px) { .metrics-row { grid-template-columns: 1fr; } }
+
+.metric-card {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border-mid);
+  border-radius: 8px;
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.metric-card.mc-design::before  { background: var(--grad-design); }
+.metric-card.mc-ops::before     { background: var(--grad-ops); }
+.metric-card.mc-total::before   { background: var(--grad-gold); }
+
+.metric-label {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--titanium);
+  margin-bottom: 6px;
+}
+
+.metric-value {
+  font-family: var(--title-font);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.mc-design .metric-value  { background: var(--grad-design);  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.mc-ops    .metric-value  { background: var(--grad-ops);     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.mc-total  .metric-value  { background: var(--grad-gold);    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.metric-sub {
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--text-muted);
+}
+
+/* Sliders */
+.sliders-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 28px;
+}
+
+@media (max-width: 640px) { .sliders-grid { grid-template-columns: 1fr; } }
+
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.slider-name {
+  font-family: var(--title-font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--titanium);
+}
+
+.slider-val {
+  font-family: var(--title-font);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sv-design  { background: var(--grad-design);  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.sv-ops     { background: var(--grad-ops);     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.sv-protect { background: var(--grad-protect); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.sv-years   { background: var(--grad-chrome);  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type=range].r-design  { background: linear-gradient(90deg, var(--col-design) var(--pct, 50%), rgba(255,255,255,0.08) var(--pct, 50%)); }
+input[type=range].r-ops     { background: linear-gradient(90deg, var(--col-ops)    var(--pct, 50%), rgba(255,255,255,0.08) var(--pct, 50%)); }
+input[type=range].r-protect { background: linear-gradient(90deg, var(--col-protect) var(--pct, 50%), rgba(255,255,255,0.08) var(--pct, 50%)); }
+input[type=range].r-years   { background: linear-gradient(90deg, #A0A0A0 var(--pct, 50%), rgba(255,255,255,0.08) var(--pct, 50%)); }
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+}
+
+input.r-design::-webkit-slider-thumb  { background: var(--col-design); }
+input.r-ops::-webkit-slider-thumb     { background: var(--col-ops); }
+input.r-protect::-webkit-slider-thumb { background: var(--col-protect); }
+input.r-years::-webkit-slider-thumb   { background: #A8A8A8; }
+
+/* Compounding mode toggles */
+.mode-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.mode-label {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--titanium);
+  margin-right: 4px;
+}
+
+.mode-btn {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border-mid);
+  background: transparent;
+  color: var(--titanium);
+}
+
+.mode-btn.active {
+  background: rgba(212,175,55,0.15);
+  border-color: rgba(212,175,55,0.4);
+  color: var(--gold);
+}
+
+/* ══════════════════════════════════════
+   CHART PANEL
+══════════════════════════════════════ */
+.chart-panel {
+  margin-bottom: 28px;
+  border: 1px solid var(--border-mid);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--grad-steel);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.chart-header {
+  background: var(--grad-chrome-bar);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.chart-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 80px; height: 2px;
+  background: var(--grad-red-h);
+}
+
+.chart-header-title {
+  font-family: var(--title-font);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #0A0A0A;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+}
+
+.legend-row {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0A0A0A;
+}
+
+.leg-dot {
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.chart-body {
+  padding: 20px 22px 24px;
+}
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+
+/* ══════════════════════════════════════
+   DIVISION BREAKDOWN
+══════════════════════════════════════ */
+.section-label {
+  font-family: var(--title-font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: var(--grad-chrome);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border-mid), transparent);
+}
+
+.division-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 768px) { .division-grid { grid-template-columns: 1fr; } }
+
+.division-col {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-mid);
+  background: var(--grad-steel);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.division-col.d-design  { border-top: 3px solid var(--col-design); }
+.division-col.d-ops     { border-top: 3px solid var(--col-ops); }
+.division-col.d-protect { border-top: 3px solid var(--col-protect); }
+
+.col-header {
+  background: var(--grad-chrome-bar);
+  padding: 14px 16px;
+}
+
+.col-division-badge {
+  font-family: var(--title-font);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.d-design  .col-division-badge { background: rgba(196,143,29,0.2);  color: var(--col-design);  border: 1px solid rgba(196,143,29,0.4); }
+.d-ops     .col-division-badge { background: rgba(28,152,166,0.15); color: var(--col-ops);     border: 1px solid rgba(28,152,166,0.35); }
+.d-protect .col-division-badge { background: rgba(64,112,184,0.15); color: var(--col-protect); border: 1px solid rgba(64,112,184,0.35); }
+
+.col-title {
+  font-family: var(--title-font);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #0A0A0A;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.55);
+  line-height: 1.1;
+  margin-bottom: 2px;
+}
+
+.col-tagline {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #444;
+}
+
+.col-rate-bar {
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid var(--border);
+}
+
+.rate-bar-label {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--titanium);
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.rate-pct {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.d-design  .rate-pct { color: var(--col-design);  -webkit-text-fill-color: var(--col-design); }
+.d-ops     .rate-pct { color: var(--col-ops);     -webkit-text-fill-color: var(--col-ops); }
+.d-protect .rate-pct { color: var(--col-protect); -webkit-text-fill-color: var(--col-protect); }
+
+.bar-track {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.d-design  .bar-fill { background: var(--grad-design); }
+.d-ops     .bar-fill { background: var(--grad-ops); }
+.d-protect .bar-fill { background: var(--grad-protect); }
+
+.col-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.intel-contrib {
+  padding: 11px 13px;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.d-design  .intel-contrib { background: rgba(196,143,29,0.06); border-color: rgba(196,143,29,0.2); }
+.d-ops     .intel-contrib { background: rgba(28,152,166,0.06); border-color: rgba(28,152,166,0.18); }
+.d-protect .intel-contrib { background: rgba(64,112,184,0.06); border-color: rgba(64,112,184,0.18); }
+
+.contrib-term {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.d-design  .contrib-term { background: var(--grad-design);  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.d-ops     .contrib-term { background: var(--grad-ops);     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.d-protect .contrib-term { background: var(--grad-protect); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.contrib-desc {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.intel-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.intel-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.intel-list li:last-child { border-bottom: none; padding-bottom: 0; }
+
+.intel-name {
+  color: var(--text-muted);
+  font-weight: 300;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.intel-fig {
+  font-family: var(--title-font);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.d-design  .intel-fig { color: var(--col-design);  -webkit-text-fill-color: var(--col-design); }
+.d-ops     .intel-fig { color: var(--col-ops);     -webkit-text-fill-color: var(--col-ops); }
+.d-protect .intel-fig { color: var(--col-protect); -webkit-text-fill-color: var(--col-protect); }
+
+.sys-row { display: flex; gap: 5px; flex-wrap: wrap; }
+
+.sys-pill {
+  font-family: var(--title-font);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+.d-design  .sys-pill { background: rgba(196,143,29,0.1); color: var(--col-design);  border-color: rgba(196,143,29,0.25); }
+.d-ops     .sys-pill { background: rgba(28,152,166,0.1); color: var(--col-ops);     border-color: rgba(28,152,166,0.22); }
+.d-protect .sys-pill { background: rgba(64,112,184,0.1); color: var(--col-protect); border-color: rgba(64,112,184,0.22); }
+
+/* ══════════════════════════════════════
+   RULE OF 72 CALLOUT
+══════════════════════════════════════ */
+.rule72-panel {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(192,192,192,0.07) 0%, rgba(168,168,168,0.03) 50%, rgba(192,192,192,0.06) 100%);
+  border: 1px solid var(--border-mid);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 28px;
+}
+
+.rule72-label {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.rule72-text {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.rule72-text strong {
+  color: var(--brushed);
+  font-weight: 500;
+  -webkit-text-fill-color: var(--brushed);
+}
+
+/* ══════════════════════════════════════
+   STACKED PHASE BAR
+══════════════════════════════════════ */
+.phase-panel {
+  border: 1px solid var(--border-mid);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--grad-steel);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  margin-bottom: 28px;
+}
+
+.phase-header {
+  background: var(--grad-chrome-bar);
+  padding: 11px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.phase-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 80px; height: 2px;
+  background: var(--grad-red-h);
+}
+
+.phase-header-title {
+  font-family: var(--title-font);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #0A0A0A;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+}
+
+.phase-header-tag {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--grad-gold);
+  color: #0A0A0A;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
+.phase-body { padding: 20px 22px; }
+
+.stacked-bar-wrap { margin-bottom: 16px; }
+
+.stacked-bar-label {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--titanium);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.stacked-bar {
+  display: flex;
+  height: 28px;
+  border-radius: 4px;
+  overflow: hidden;
+  gap: 2px;
+}
+
+.stack-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  transition: flex 0.8s ease;
+}
+
+.seg-design  { background: var(--grad-design);  flex: 30; }
+.seg-ops     { background: var(--grad-ops);     flex: 45; }
+.seg-protect { background: var(--grad-protect); flex: 25; }
+
+.phase-strip {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.phase-item {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+
+.phase-name {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.phase-roi {
+  font-family: var(--title-font);
+  font-size: 18px;
+  font-weight: 800;
+  background: var(--grad-chrome);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+.phase-desc {
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* ══════════════════════════════════════
+   SOVEREIGNTY CLOSE
+══════════════════════════════════════ */
+.sovereignty-close {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(192,192,192,0.07) 0%, rgba(168,168,168,0.03) 50%, rgba(192,192,192,0.06) 100%);
+  border: 1px solid var(--border-mid);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.sovereignty-close-label {
+  font-family: var(--title-font);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.sovereignty-close-text {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.sovereignty-close-text strong {
+  color: var(--brushed);
+  font-weight: 500;
+  -webkit-text-fill-color: var(--brushed);
+}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+.page-footer {
+  margin-top: 48px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--titanium);
+  font-family: var(--title-font);
+  letter-spacing: 0.05em;
+}
+
+.page-footer::before {
+  content: '';
+  display: block;
+  width: 60px; height: 2px;
+  background: var(--grad-red-h);
+  border-radius: 1px;
+  margin: 0 auto 14px;
+}
+
+.footer-brand {
+  background: var(--grad-chrome);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+</style>
+</head>
+<body>
+<main class="container" role="main">
+
+  <!-- ══ HEADER ══ -->
+  <header class="page-header">
+    <div class="header-eyebrow">AESIT® — S³ Labs® Intelligence Lifecycle Framework™ · Compounding Intelligence™</div>
+    <h1 class="header-title">
+      <span class="title-main">AESIT® Compounding Intelligence™ —</span>&nbsp;<span class="title-accent">The Intelligence Growth Engine™</span>
+    </h1>
+    <p class="header-subtitle">How Precision, Performance, and Protection Each Accelerate Your Asset's Intelligence Curve</p>
+    <p class="header-lead">
+      Every insight earned feeds the next iteration. Every iteration compounds the return. This is not a philosophy — it is an engineered system. <strong>AESIT® Intelligence Engine™</strong> compounds across three divisions: <strong>Design</strong> encodes precision at the foundation — the highest- leverage moment in any asset lifecycle. <strong>Operations</strong> continuously re-engineers performance, learning the building's metabolism with every data cycle. <strong>Protection</strong> secures the compounding gain — guaranteeing that every return earned remains yours. Adjust the levers below to model how each division's intelligence rate compounds across your asset lifecycle. 
+    </p>
+  </header>
+
+  <!-- ══ CONTROLS ══ -->
+  <div class="controls-panel">
+    <div class="controls-header">
+      <div class="controls-header-title">Intelligence Compounding Simulator — Calibrate Division Rates & Lifecycle Horizon</div>
+      <div class="controls-header-tag">IDLF · Live Model</div>
+    </div>
+    <div class="controls-body">
+
+      <div class="metrics-row">
+        <div class="metric-card mc-design">
+          <div class="metric-label">Intelligence Multiplier</div>
+          <div class="metric-value" id="val-multiplier">0×</div>
+          <div class="metric-sub">Total compounded return</div>
+        </div>
+        <div class="metric-card mc-ops">
+          <div class="metric-label">Intelligence Gained</div>
+          <div class="metric-value" id="val-gained">0×</div>
+          <div class="metric-sub">Beyond baseline input</div>
+        </div>
+        <div class="metric-card mc-total">
+          <div class="metric-label">Doubling Period</div>
+          <div class="metric-value" id="val-double">— yrs</div>
+          <div class="metric-sub">Rule of 72 — every year without AESIT® is a doubling deferred</div>
+        </div>
+      </div>
+
+      <div class="sliders-grid">
+        <div class="slider-row">
+          <div class="slider-top">
+            <span class="slider-name">Design Intelligence Rate — Precision Encoded</span>
+            <span class="slider-val sv-design" id="out-design">8% / yr</span>
+          </div>
+          <input type="range" class="r-design" id="sl-design" min="1" max="30" step="1" value="8">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top">
+            <span class="slider-name">Operations Intelligence Rate — Performance Compounding</span>
+            <span class="slider-val sv-ops" id="out-ops">12% / yr</span>
+          </div>
+          <input type="range" class="r-ops" id="sl-ops" min="1" max="30" step="1" value="12">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top">
+            <span class="slider-name">Protection Intelligence Rate — Resiliency Secured</span>
+            <span class="slider-val sv-protect" id="out-protect">6% / yr</span>
+          </div>
+          <input type="range" class="r-protect" id="sl-protect" min="1" max="30" step="1" value="6">
+        </div>
+        <div class="slider-row">
+          <div class="slider-top">
+            <span class="slider-name">Asset Lifecycle Horizon</span>
+            <span class="slider-val sv-years" id="out-years">20 yrs</span>
+          </div>
+          <input type="range" class="r-years" id="sl-years" min="1" max="50" step="1" value="20">
+        </div>
+      </div>
+
+      <div class="mode-row">
+        <span class="mode-label">Intelligence Compounding Cadence:</span>
+        <button class="mode-btn active" data-freq="1" onclick="setFreq(1,this)">Annual</button>
+        <button class="mode-btn" data-freq="4" onclick="setFreq(4,this)">Quarterly</button>
+        <button class="mode-btn" data-freq="12" onclick="setFreq(12,this)">Monthly</button>
+        <button class="mode-btn" data-freq="365" onclick="setFreq(365,this)">Continuous</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ CHART ══ -->
+  <div class="chart-panel">
+    <div class="chart-header">
+      <div class="chart-header-title">Intelligence Curve — Compounded Divisional Growth vs. Linear Baseline</div>
+      <div class="legend-row">
+        <div class="leg-item"><div class="leg-dot" style="background:#C48F1D;"></div>Design</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#1C98A6;"></div>Operations</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#4070B8;"></div>Protection</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#D4AF37;border:1px solid #888;"></div>Combined</div>
+        <div class="leg-item"><div class="leg-dot" style="background:rgba(200,200,200,0.2);border:1px dashed rgba(200,200,200,0.4);"></div>Linear</div>
+      </div>
+    </div>
+    <div class="chart-body">
+      <div class="chart-wrap">
+        <canvas id="intel-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DIVISION COLUMNS ══ -->
+  <span class="section-label">Divisional Intelligence — Precision. Performance. Protection.</span>
+
+  <div class="division-grid">
+
+    <!-- DESIGN -->
+    <div class="division-col d-design">
+      <div class="col-header">
+        <div class="col-division-badge">Division 01</div>
+        <div class="col-title">Design Intelligence</div>
+        <div class="col-tagline">Precision-Encoded · S³ Labs®</div>
+      </div>
+      <div class="col-rate-bar">
+        <div class="rate-bar-label">
+          <span>Compounding Contribution</span>
+          <span class="rate-pct" id="bar-design-pct">8% / yr</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="bar-design" style="width:35%;"></div>
+        </div>
+      </div>
+      <div class="col-body">
+        <div class="intel-contrib">
+          <div class="contrib-term">Drives — Intelligence Foundation ↓</div>
+          <div class="contrib-desc">Design is where intelligence is encoded at the lowest cost. Every precision decision made in S³ Labs® eliminates downstream entropy — the highest-leverage compounding period in the lifecycle.</div>
+        </div>
+        <ul class="intel-list">
+          <li><span class="intel-name">Data fidelity from day one (Digital Twin seed)</span><span class="intel-fig">High</span></li>
+          <li><span class="intel-name">Generative design iterations per engagement</span><span class="intel-fig">∞</span></li>
+          <li><span class="intel-name">ESG intelligence encoded at structure</span><span class="intel-fig">Built-in</span></li>
+          <li><span class="intel-name">Rework eliminated via clash-detection AI</span><span class="intel-fig">Significant</span></li>
+          <li><span class="intel-name">IDPD lifecycle record established</span><span class="intel-fig">Day 1</span></li>
+        </ul>
+        <div class="sys-row">
+          <span class="sys-pill">S³ Labs®</span>
+          <span class="sys-pill">Generative AI</span>
+          <span class="sys-pill">BIM/VDC</span>
+          <span class="sys-pill">EcoFlow®</span>
+          <span class="sys-pill">IDPD</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPERATIONS -->
+    <div class="division-col d-ops">
+      <div class="col-header">
+        <div class="col-division-badge">Division 02</div>
+        <div class="col-title">Operations Intelligence</div>
+        <div class="col-tagline">Continuously Re-Engineering · SBLM · Digital Twin</div>
+      </div>
+      <div class="col-rate-bar">
+        <div class="rate-bar-label">
+          <span>Compounding Contribution</span>
+          <span class="rate-pct" id="bar-ops-pct">12% / yr</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="bar-ops" style="width:55%;"></div>
+        </div>
+      </div>
+      <div class="col-body">
+        <div class="intel-contrib">
+          <div class="contrib-term">Drives — Performance Intelligence ↑</div>
+          <div class="contrib-desc">Operations is the primary intelligence engine. Digital Twin telemetry and SBLM continuously re-learn the building's metabolism — each cycle sharper than the last, compounding insight into measured NOI gains.</div>
+        </div>
+        <ul class="intel-list">
+          <li><span class="intel-name">Digital Twin learning cycles per year</span><span class="intel-fig">Continuous</span></li>
+          <li><span class="intel-name">Predictive maintenance accuracy gain</span><span class="intel-fig">+20–40%</span></li>
+          <li><span class="intel-name">Energy optimization convergence</span><span class="intel-fig">15–35%</span></li>
+          <li><span class="intel-name">AI analytics throughput (signals/day)</span><span class="intel-fig">Millions</span></li>
+          <li><span class="intel-name">NOI improvement compounded lifecycle</span><span class="intel-fig">300%+</span></li>
+        </ul>
+        <div class="sys-row">
+          <span class="sys-pill">Digital Twin</span>
+          <span class="sys-pill">SBLM</span>
+          <span class="sys-pill">AI Analytics</span>
+          <span class="sys-pill">IoT / GIS</span>
+          <span class="sys-pill">EAM / IWMS</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROTECTION -->
+    <div class="division-col d-protect">
+      <div class="col-header">
+        <div class="col-division-badge">Division 03</div>
+        <div class="col-title">Protection Intelligence</div>
+        <div class="col-tagline">Secure-by-Design · Asset Sovereignty™</div>
+      </div>
+      <div class="col-rate-bar">
+        <div class="rate-bar-label">
+          <span>Compounding Contribution</span>
+          <span class="rate-pct" id="bar-protect-pct">6% / yr</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="bar-protect" style="width:25%;"></div>
+        </div>
+      </div>
+      <div class="col-body">
+        <div class="intel-contrib">
+          <div class="contrib-term">Drives — Resiliency Intelligence ↑</div>
+          <div class="contrib-desc">Protection intelligence compounds through threat learning — each incident resolved sharpens the next posture. The Resiliency Premium is not static; it grows as the asset's defensive intelligence matures.</div>
+        </div>
+        <ul class="intel-list">
+          <li><span class="intel-name">Threat-pattern learning cadence</span><span class="intel-fig">Continuous</span></li>
+          <li><span class="intel-name">Cyber-physical convergence fidelity</span><span class="intel-fig">Unified</span></li>
+          <li><span class="intel-name">Mission-critical continuity assurance</span><span class="intel-fig">100%</span></li>
+          <li><span class="intel-name">Cap rate compression via risk intelligence</span><span class="intel-fig">Measurable</span></li>
+          <li><span class="intel-name">Asset Sovereignty™ — data ownership</span><span class="intel-fig">Guaranteed</span></li>
+        </ul>
+        <div class="sys-row">
+          <span class="sys-pill">Cyber-Physical</span>
+          <span class="sys-pill">Threat Intel</span>
+          <span class="sys-pill">Continuity</span>
+          <span class="sys-pill">Access Control</span>
+          <span class="sys-pill">Emergency Comms</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ RULE OF 72 ══ -->
+  <div class="rule72-panel">
+    <span class="rule72-label">The Intelligence Rule of 72™</span>
+    <span class="rule72-text" id="rule72-text">At a combined rate of <strong>26%/yr</strong>, your asset's intelligence base doubles in roughly <strong>2.8 years</strong>. Every compounding period that passes without AESIT intelligence active is a doubling left on the table — and in CRE, time is the only input you cannot recover. ∞</span>
+  </div>
+
+  <!-- ══ PHASE BREAKDOWN ══ -->
+  <div class="phase-panel">
+    <div class="phase-header">
+      <div class="phase-header-title">The Intelligence Lifecycle — How Three
+Divisions Compound Into One Sovereign Platform</div>
+      <div class="phase-header-tag">IDLF · Full Lifecycle</div>
+    </div>
+    <div class="phase-body">
+      <div class="stacked-bar-wrap">
+        <div class="stacked-bar-label">
+          <span>Divisional intelligence contribution to total lifecycle compounding</span>
+          <span style="background:var(--grad-gold);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:14px;font-weight:800;">Continuous. Perpetual. Yours.</span>
+        </div>
+        <div class="stacked-bar">
+          <div class="stack-seg seg-design">Design</div>
+          <div class="stack-seg seg-ops">Operations</div>
+          <div class="stack-seg seg-protect">Protection</div>
+        </div>
+      </div>
+      <div class="phase-strip">
+        <div class="phase-item">
+          <span class="phase-name">Phase 1 · Intelligence Encoding</span>
+          <div class="phase-roi">Foundation</div>
+          <div class="phase-desc">S³ Labs® and IDPD encode intelligence into the asset from Discovery — seeding the Digital Twin that every subsequent compounding cycle builds upon.</div>
+        </div>
+        <div class="phase-item">
+          <span class="phase-name">Phase 2 · Intelligence Optimization</span>
+          <div class="phase-roi">Compounding</div>
+          <div class="phase-desc">Digital Twin, SBLM, and AI analytics re-learn the building's metabolism continuously — each cycle more precise, compounding operational intelligence into measurable NOI.</div>
+        </div>
+        <div class="phase-item">
+          <span class="phase-name">Phase 3 · Intelligence Sovereignty</span>
+          <div class="phase-roi">Perpetual</div>
+          <div class="phase-desc">Protection intelligence matures with every threat resolved — securing the compounding gain, compressing
+institutional risk, and guaranteeing that all data, all telemetry, and all intelligence remains the asset owner's sovereign property. This is not a service. It is ownership. ∞</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SOVEREIGNTY CLOSE ══ -->
+  <div class="sovereignty-close">
+    <span class="sovereignty-close-label">Asset Intelligence Sovereignty™</span>
+    <span class="sovereignty-close-text">Every insight, every learning cycle, and every compounding return belongs to you — not your vendor. <strong>You own the intelligence. You own the data. You own the advantage.</strong> AESIT® guarantees total sovereignty over your Digital Twin, telemetry, and operational intelligence from groundbreaking through perpetual optimization. Built. Measured. Proven. ∞</span>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="page-footer">
+    <span class="footer-brand">AESIT® — S3 Labs® | Compounding
+Intelligence™ · Asset Sovereignty™ | © 2026 AESIT Global Solutions Group. All rights reserved.
+  </footer>
+
+</main>
+
+<script>
+let freq = 1;
+let chart;
+
+function setFreq(f, btn) {
+  freq = f;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  update();
+}
+
+function updateSliderFill(el, min, max) {
+  const pct = ((+el.value - min) / (max - min) * 100).toFixed(1) + '%';
+  el.style.setProperty('--pct', pct);
+}
+
+function compound(rate, years, n) {
+  return Math.pow(1 + rate / n, n * years);
+}
+
+function update() {
+  const dRate   = +document.getElementById('sl-design').value / 100;
+  const oRate   = +document.getElementById('sl-ops').value / 100;
+  const pRate   = +document.getElementById('sl-protect').value / 100;
+  const years   = +document.getElementById('sl-years').value;
+
+  document.getElementById('out-design').textContent  = Math.round(dRate*100) + '% / yr';
+  document.getElementById('out-ops').textContent     = Math.round(oRate*100) + '% / yr';
+  document.getElementById('out-protect').textContent = Math.round(pRate*100) + '% / yr';
+  document.getElementById('out-years').textContent   = years + ' yrs';
+
+  updateSliderFill(document.getElementById('sl-design'),  1, 30);
+  updateSliderFill(document.getElementById('sl-ops'),     1, 30);
+  updateSliderFill(document.getElementById('sl-protect'), 1, 30);
+  updateSliderFill(document.getElementById('sl-years'),   1, 50);
+
+  const maxRate = Math.max(dRate, oRate, pRate);
+  const combinedRate = dRate + oRate + pRate;
+
+  const dFinal = compound(dRate, years, freq);
+  const oFinal = compound(oRate, years, freq);
+  const pFinal = compound(pRate, years, freq);
+  const cFinal = compound(combinedRate, years, freq);
+
+  document.getElementById('val-multiplier').textContent = cFinal.toFixed(1) + '×';
+  document.getElementById('val-gained').textContent     = (cFinal - 1).toFixed(1) + '×';
+  const doubling = (72 / (combinedRate * 100));
+  document.getElementById('val-double').textContent     = doubling.toFixed(1) + ' yrs';
+
+  document.getElementById('bar-design-pct').textContent  = Math.round(dRate*100) + '% / yr';
+  document.getElementById('bar-ops-pct').textContent     = Math.round(oRate*100) + '% / yr';
+  document.getElementById('bar-protect-pct').textContent = Math.round(pRate*100) + '% / yr';
+
+  document.getElementById('bar-design').style.width  = Math.min(100, Math.round(dRate*100/30*100)) + '%';
+  document.getElementById('bar-ops').style.width     = Math.min(100, Math.round(oRate*100/30*100)) + '%';
+  document.getElementById('bar-protect').style.width = Math.min(100, Math.round(pRate*100/30*100)) + '%';
+
+  const totalRate = Math.round(combinedRate * 100);
+  const doubYrs   = doubling.toFixed(1);
+  document.getElementById('rule72-text').innerHTML =
+    'At a combined rate of <strong>' + totalRate + '%/yr</strong>, your asset\'s intelligence base doubles in roughly <strong>' + doubYrs + ' years</strong>. Every compounding period that passes without AESIT intelligence active is a doubling left on the table. ∞';
+
+  const labels = [];
+  const dData = [], oData = [], pData = [], cData = [], linData = [];
+
+  for (let y = 0; y <= years; y++) {
+    labels.push(y === 0 ? 'Now' : 'Yr ' + y);
+    dData.push(+compound(dRate, y, freq).toFixed(3));
+    oData.push(+compound(oRate, y, freq).toFixed(3));
+    pData.push(+compound(pRate, y, freq).toFixed(3));
+    cData.push(+compound(combinedRate, y, freq).toFixed(3));
+    linData.push(+(1 + combinedRate * y).toFixed(3));
+  }
+
+  if (chart) chart.destroy();
+  chart = new Chart(document.getElementById('intel-chart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Combined',
+          data: cData,
+          borderColor: '#D4AF37',
+          backgroundColor: 'rgba(212,175,55,0.08)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 2.5
+        },
+        {
+          label: 'Operations',
+          data: oData,
+          borderColor: '#1C98A6',
+          backgroundColor: 'transparent',
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1.5
+        },
+        {
+          label: 'Design',
+          data: dData,
+          borderColor: '#C48F1D',
+          backgroundColor: 'transparent',
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1.5
+        },
+        {
+          label: 'Protection',
+          data: pData,
+          borderColor: '#4070B8',
+          backgroundColor: 'transparent',
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          borderWidth: 1.5
+        },
+        {
+          label: 'Linear Baseline',
+          data: linData,
+          borderColor: 'rgba(200,200,200,0.25)',
+          backgroundColor: 'transparent',
+          fill: false,
+          tension: 0,
+          pointRadius: 0,
+          borderWidth: 1,
+          borderDash: [5, 4]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.dataset.label + ': ' + ctx.raw.toFixed(2) + '×'
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#666', font: { size: 11 }, autoSkip: true, maxTicksLimit: 11 },
+          grid: { display: false }
+        },
+        y: {
+          ticks: {
+            color: '#666',
+            font: { size: 11 },
+            callback: v => v.toFixed(1) + '×'
+          },
+          grid: { color: 'rgba(255,255,255,0.04)' }
+        }
+      }
+    }
+  });
+}
+
+['sl-design','sl-ops','sl-protect','sl-years'].forEach(id => {
+  document.getElementById(id).addEventListener('input', update);
+});
+
+update();
+</script>
+</body>
+</html>
